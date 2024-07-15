@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: php-container
+    volumes:
+      - ./www:/var/www/html
+    networks:
+      - app-network
+    ports:
+      - "8080:80"
+  
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    networks:
+      - app-network
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-init:/docker-entrypoint-initdb.d
+
+  oracle:
+    image: gvenzl/oracle-xe
+    container_name: oracle-container
+    environment:
+      - ORACLE_PASSWORD=password
+    networks:
+      - app-network
+    ports:
+      - "1521:1521"
+    volumes:
+      - ./oracle-init:/container-entrypoint-initdb.d
+
+networks:
+  app-network:
+    driver: bridge
